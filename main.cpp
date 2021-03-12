@@ -1,19 +1,19 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <time.h>
+#include "headers/sortingAlgos.h"
 
-
-
-void displayArray(std::vector<int> &,int);
-void displayArrayEnd(std::vector<int> &,int);
 void generateArray(std::vector<int> &);
-void selectionSort(std::vector<int> &);
-void insertionSort(std::vector<int> &);
+//Sorting algorithms
 
 //I set the window as a global variable
 sf::RenderWindow window(sf::VideoMode::getFullscreenModes()[0], "SORT visualisation");
 
-#define elementNumber 500
+void displayArray(std::vector<int> &,int);
+void displayArrayEnd(std::vector<int> &,int);
+
+#define elementNumber 1000
+#define delay 0.1
 
 int main()
 {
@@ -31,19 +31,41 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-    //The call for the sorting algorithm with the display function inside
-        insertionSort(vect);
+        //The call for the sorting algorithm with the display function inside
+        CocktailSort(vect);
+        for(auto &i:vect )std::cout <<i<<std::endl;
 
 
-    //The final display with the array sorted
+        //The final display with the array sorted
         for (int i = 0; i < vect.size(); i++)
-        displayArrayEnd(vect,i);
+            displayArrayEnd(vect,i);
         window.close();
 
     }
 
     return 0;
 }
+
+void generateArray(std::vector<int> &vect)
+{
+//We will generate elements in the array in the order
+// -50 is for that the longest element in the array does not hit the up limit of the window
+    for(int i=1; i<elementNumber+1; i++)
+        vect[i]=i*((window.getSize().y-50)/float(elementNumber));
+
+//we make 100 random swap
+    int i,j;
+    srand(time(NULL));
+    for(int p=0; p<elementNumber*2; p++)
+    {
+        i=rand()%elementNumber;
+        j=rand()%elementNumber;
+        std::swap(vect[i],vect[j]);
+    }
+}
+
+
+
 void displayArray(std::vector<int> &vect,int index)
 {
     float ratio=(float(window.getSize().x/float(elementNumber)));
@@ -58,7 +80,7 @@ void displayArray(std::vector<int> &vect,int index)
         bar.setPosition(ratio*i,window.getSize().y-vect[i]);
         window.draw(bar);
     }
-    sf::sleep(sf::milliseconds(2));
+    sf::sleep(sf::milliseconds(delay));
 
     window.display();
 }
@@ -82,54 +104,11 @@ void displayArrayEnd(std::vector<int> &vect,int index)
     }
     sf::sleep(sf::milliseconds(10));
 
+
+
     window.display();
 }
 
-void generateArray(std::vector<int> &vect)
-{
-//We will generate elements in the array in the order
-// -50 is for that the longest element in the array does not hit the up limit of the window
-    for(int i=1; i<elementNumber+1; i++)
-        vect[i]=i*((window.getSize().y-50)/float(elementNumber));
-
-//we make 100 random swap
-    int i,j;
-    srand(time(NULL));
-    for(int p=0; p<elementNumber; p++)
-    {
-        i=rand()%elementNumber;
-        j=rand()%elementNumber;
-        std::swap(vect[i],vect[j]);
-    }
-}
-void selectionSort(std::vector<int> &vect)
-{
-    for (int i = 0; i < vect.size()-1; i++)
-    {
-        for (int j = 0; j < vect.size()-i-1; j++)
-        {
-            if (vect[j] > vect[j+1])
-            {
-                std::swap(vect[j], vect[j+1]);
-            }
-            displayArray(vect,j);
-        }
-    }
-}
 
 
-void insertionSort(std::vector<int> &vect)
-{
-    for (int i = 1; i < vect.size() ; i++)
-    {
-        int key = vect[i];
-        int j = i - 1;
-        while (vect[j] > key && j >= 0)
-        {
-            vect[j + 1] = vect[j];
-            j--;
-            displayArray(vect,j);
-        }
-        vect[j + 1] = key;
-    }
-    }
+
